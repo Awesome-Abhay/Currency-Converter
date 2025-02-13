@@ -1,6 +1,7 @@
 import { use, useState } from 'react'
 import './App.css'
-import OneBox from './components/OneBox';
+import OneBox from './components/index';
+import useCurrencyInfo from './hooks/useCurrencyInfo';
 
 
 function App() {
@@ -9,6 +10,14 @@ function App() {
   let [from, setFrom]= useState("USD");
   let [to, setTo]= useState("INR");
   let [convertedAmount, setConvertedAmount]= useState(0);
+
+  let currencyInfo= useCurrencyInfo(from);
+
+  let allCurrencies= Object.keys(currencyInfo);
+
+  let convert= ()=>{
+    setConvertedAmount(amount*currencyInfo[to.toLowerCase()]);
+  }
 
 
   let swap= ()=>{
@@ -29,16 +38,18 @@ function App() {
           amount={amount}
           onAmountChange={(amount)=> setAmount(amount)}
           selectCurrency={from}
-          currencyDisable={false}
-
+          currencyOptions={allCurrencies}
+          onCurrencyChange={(currency)=> setFrom(currency)}
+          onKeyPress={convert}
         />
         
         <OneBox 
           label={to}
           amountDisable={true}
           selectCurrency={to}
-          currencyDisable={true}
           amount={convertedAmount}
+          currencyOptions={allCurrencies}
+          onCurrencyChange={(currency)=> setTo(currency)}
           
         />
 
@@ -47,7 +58,9 @@ function App() {
           onClick={swap}
           >swap</button>
 
-        <button className="convert w-full bg-blue-500 text-white rounded-xl p-2 flex justify-center items-center text-2xl cursor-pointer">Convert From {from} To {to}</button>
+        <button className="convert w-full bg-blue-500 text-white rounded-xl p-2 flex justify-center items-center text-2xl cursor-pointer"
+        onClick={convert}
+        >Convert From {from} To {to}</button>
 
       </div>
     </>
